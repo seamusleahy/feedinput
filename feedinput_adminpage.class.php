@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ . '/sh_walker_taxonomydropdown.class.php' ;
 
 /**
  * Creates the admin UI page
@@ -12,8 +12,9 @@ class FeedInput_AdminPage {
 		add_action( 'admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts') );
 		add_action( 'init', array( &$this, 'register_feedset') );
 		add_action( 'feedinput_convert_to_post-feedinput_admin', array(&$this, 'convert_post_action'), 3, 10 );
-		add_action( 'init', array( &$this, 'register_taxonomy') );
 		add_action( 'init', array( &$this, 'register_post_type' ) );
+		add_action( 'manage_taxonomies_for_feed-item_columns', array( &$this, 'manage_taxonomies_columns' ) );
+		add_action( 'restrict_manage_posts', array( &$this, 'post_table_filters' ) );
 	}
 
 
@@ -192,20 +193,6 @@ class FeedInput_AdminPage {
 		}
 	}
 
-	/**
-	 * Register a custom taxonomy for the named media source
-	 */
-	function register_taxonomy() {
-		register_taxonomy('media-sources',
-			array( 'post'),
-		 	array(
-		 		'labels' => array(
-		 			'singular_name' => __('Media Source', 'feedinput'),
-		 			'name' => __( 'Media Sources', 'feedinput' ),
-		 		),
-		 		'public' => true,
-		 	) );
-	}
 
 	/**
 	 * Register the post type and taxonomy
@@ -228,12 +215,51 @@ class FeedInput_AdminPage {
 			),
 			'supports' => array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'trackbacks', 'custom-fields', 'revisions', 'page-attributes'),
 		));
+
+		register_taxonomy('media-sources',
+			array( 'feed-item'),
+			array(
+				'labels' => array(
+					'singular_name' => __('Media Source', 'feedinput'),
+					'name' => __( 'Media Sources', 'feedinput' ),
+				),
+				'public' => true,
+			) );
 	}
 
 	
+	/**
+	 * Manage the taxonomy columns
+	 */
+	function manage_taxonomies_columns( $taxonomies ) {
+		$taxonomies[] = 'media-sources';
+		return $taxonomies;
+	}
 
 
-	
+	/**
+	 * Add media source filter to the post table
+	 */
+	function post_table_filters() {
+		global $wp_query;
+		$screen = get_current_screen();
+
+		if ( $screen->id == 'edit-feed-item' ) {
+			$taxonomy = get_taxonomy( 'media-sources' );
+			wp_dropdown_categories(array(
+				'show_option_all' =>  __("Show All {$taxonomy->label}"),
+				'taxonomy'        =>  'media-sources',
+				'name'            =>  'media-sources',
+				'orderby'         =>  'name',
+				'selected'        =>  $wp_query->query['media-sources'],
+				'hierarchical'    =>  false,
+				'show_count'      =>  false, // Show # listings in parens
+				'hide_empty'      =>  false,
+				'walker'          => new SH_Walker_TaxonomyDropdown(),
+				'value'           =>'slug',
+			 ));
+		}
+	}
 
 
 	
