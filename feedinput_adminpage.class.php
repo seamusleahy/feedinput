@@ -33,17 +33,85 @@ class FeedInput_AdminPage {
 	function page_content() {
 		$feed_urls = $this->get_feed_urls();
 		$map = $this->get_taxonomy_map();
+
+		$expire_options = apply_filters( 'feedinput_admin_expire_drafts_options', array(
+			'1 day'   => 1,
+			'7 days'  => 7,
+			'15 days' => 15,
+			'30 days' => 30,
+			'90 days' => 90,
+			'Never'   => 0
+		));
 		?>
 		<div class="wrap">
 			<h2><?php _e('FeedInput', 'feedinput'); ?></h2>
 
-			<form method="POST" action="options-general.php?page=feedinput">
+			<form method="POST" action="options-general.php?page=feedinput" class="feedinput-admin-content">
 				<?php wp_nonce_field( 'update_feed_urls', 'feedinput_nonce' ); ?>
 				<input type="hidden" name="feedinput" value="1" />
 
-				<h3>Feed Sources</h3>
-				<ul>
+				<div class="feeds">
+					<h3>Feed Sources</h3>
+					<ul>
+						<li>
+							<a data-action="delete" class="delete-button" title="<?php esc_attr_e( 'Delete', 'feedinput' ); ?>">&minus;</a>
+							<p>
+								<label>
+									<span class="label"><?php _e( 'Media Source Name', 'feedinput' ); ?></span>
+									<input class="text" type="text" name="media_source_name[]" />
+								</label>
+							</p>
+
+							<p>
+								<label>
+									<span class="label"><?php _e( 'Media Feed URL', 'feedinput' ); ?></span>
+									<input class="text" type="text" name="media_feed_url[]" />
+								</label>
+							</p>
+
+							<p>
+								<label>
+									<span class="label"><?php _e( 'Default Author', 'feedinput' ); ?></span>
+									<?php wp_dropdown_users( array() ); ?>
+								</label>
+							</p>
+
+							<p>
+								<label>
+									<span class="label"><?php _e( 'Expire Drafts', 'feedinput' ); ?></span>
+									<select name="expire_drafts[]">
+										<?php 
+										foreach ( $expire_options as $label => $val ) {
+											echo '<option value="', $val, '">', __( $label, 'feedinput') ,'</option>';
+										} ?>
+									</select>
+								</label>
+							</p>
+
+							<p>
+								<label>
+									<span class="label"><?php _e( 'Auto Publish', 'feedinput' ); ?></span>
+									<input type="checkbox" name="auto-publish[]" />
+								</label>
+							</p>
+
+							<p>
+								<label>
+									<span class="label"><?php _e( 'Add Credit', 'feedinput' ); ?></span>
+									<input type="checkbox" name="add-credit[]" />
+								</label>
+							</p>
+						</li>
+					</ul>
+
+					<div class="buttons">
+						<a class="button" data-action="add-row"><?php _e( 'Add Feed', 'feedinput' ); ?></a>
+					</div>
+				</div>
+
+				<script type="template" data-template="row">
 					<li>
+						<a data-action="delete" class="delete-button" title="<?php esc_attr_e( 'Delete', 'feedinput' ); ?>">&minus;</a>
 						<p>
 							<label>
 								<span class="label"><?php _e( 'Media Source Name', 'feedinput' ); ?></span>
@@ -70,14 +138,6 @@ class FeedInput_AdminPage {
 								<span class="label"><?php _e( 'Expire Drafts', 'feedinput' ); ?></span>
 								<select name="expire_drafts[]">
 									<?php 
-									$expire_options = array(
-										'1 day'   => 1,
-										'7 days'  => 7,
-										'15 days' => 15,
-										'30 days' => 30,
-										'90 days' => 90,
-										'Never'   => 0
-									);
 									foreach ( $expire_options as $label => $val ) {
 										echo '<option value="', $val, '">', __( $label, 'feedinput') ,'</option>';
 									} ?>
@@ -99,9 +159,9 @@ class FeedInput_AdminPage {
 							</label>
 						</p>
 					</li>
-				</ul>
+				</script>
 
-
+<?php /*
 				<label for="feed_urls"><?php _e('Feed URLs', 'feedinput'); ?></label>
 				<p><?php _e('Enter each feed URL on a separate line. You can prefix a URL with the <a href="' . admin_url('edit-tags.php?taxonomy=media-sources') .  '">media source</a> term name to assign the converted posts. Example: Arnold Times | http://arnoldtimesonline.com/feed', 'feedinput'); ?></p>
 				<textarea id="feed_urls" name="feed_urls" style="width: 100%" rows="10"><?php
@@ -114,9 +174,9 @@ class FeedInput_AdminPage {
 						}
 					}
 					echo implode( "\n", $lines );
-				?></textarea>
+				?></textarea> */ ?>
 
-				<div>
+				<div class="submit-buttons">
 					<button type="submit" class="button-primary"><?php _e('Save'); ?></button>
 				</div>
 			</form>
@@ -133,6 +193,9 @@ class FeedInput_AdminPage {
 			return;
 		}
 
+
+		wp_enqueue_script( 'feedinput-admin', plugins_url( 'feedinput-admin.js', __FILE__ ), array( 'jquery' ), '1.0', true );
+		wp_enqueue_style( 'feedinput-admin', plugins_url( 'feedinput-admin.css', __FILE__ ), '1.0' );
 	}
 
 
