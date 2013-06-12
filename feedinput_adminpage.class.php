@@ -243,10 +243,17 @@ class FeedInput_AdminPage {
 							'auto_publish'   => !empty( $auto_publishes[$key] ) ? filter_var( $auto_publishes[$key], FILTER_VALIDATE_BOOLEAN ) : false,
 							'expire_draft'   => (int) $expire_drafts[$key],
 							'add_credit'     => !empty( $add_credits[$key] ) ? filter_var( $add_credits[$key], FILTER_VALIDATE_BOOLEAN ) : false,
+							
+							// Add configurations
 							'source_taxonomy' => array(
 								'taxonomy' => 'media-sources',
 								'term' => $names[$key],
 							),
+
+							'post_author' => array(
+								'find_wordpress_user' => false,
+								'default_author_id' => (int) $default_authors[$key],
+							)
 						);
 					}
 				}

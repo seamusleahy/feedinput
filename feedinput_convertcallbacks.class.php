@@ -8,7 +8,10 @@ class FeedInput_ConvertCallbacks {
    * Add the converted posts to a taxonomy term for what URL it came from
    */
   static function source_taxonomy( $post, $data, $feedset ) {
-    $options = $feedset->get_feed_settings( $data['feed_url'] );
+    $feedset_options = $feedset->options;
+    $feed_options = $feedset->get_feed_settings( $data['feed_url'] );
+
+    $options = array_merge( $feedset_options, $feed_options );
 
     if ( isset($options['source_taxonomy']) && is_array($options['source_taxonomy']) ) {
       $taxonomy = $options['source_taxonomy']['taxonomy'];

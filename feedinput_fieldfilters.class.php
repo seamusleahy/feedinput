@@ -16,10 +16,24 @@ class FeedInput_FieldFilters {
 	/**
 	 * Try to match the first author with a WordPress user.
 	 */
-	static function post_author( $data ) {
+	static function post_author( $data, $feedset, $args ) {
 		global $wpdb;
 
-		if ( !empty( $data['authors'][0]['name']) || !empty( $data['authors'][0]['email']) ) {
+		// Get the configuration
+		$default_options = array(
+			'post_author' => array(
+				'find_wordpress_user' => true,
+				'default_author_id' => 0,
+			)
+		);
+		$feedset_options = $feedset->options;
+    $feed_options = $feedset->get_feed_settings( $data['feed_url'] );
+    $options = array_merge( $default_options, $feedset_options, $feed_options );
+
+		$find_wordpress_user = isset( $options['post_author']['find_wordpress_user'] ) ? $options['post_author']['find_wordpress_user'] : true;
+
+		// Try to find a matching WordPress user
+		if ( $find_wordpress_user &&  !empty( $data['authors'][0]['name']) || !empty( $data['authors'][0]['email']) ) {
 			$where = array();
 			if ( !empty( $data['authors'][0]['name']) ) {
 				$where[] = $wpdb->prepare( "user_nicename = '%s'", $data['authors'][0]['name'] );
@@ -36,7 +50,9 @@ class FeedInput_FieldFilters {
 			}
 		}
 
-		return 0;
+		// Fallback to the default author
+		$default_author_id = isset( $options['post_author']['default_author_id'] ) ? $options['post_author']['default_author_id'] : 0;
+		return $default_author_id;
 	}
 
 
