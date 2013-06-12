@@ -40,6 +40,68 @@ class FeedInput_AdminPage {
 			<form method="POST" action="options-general.php?page=feedinput">
 				<?php wp_nonce_field( 'update_feed_urls', 'feedinput_nonce' ); ?>
 				<input type="hidden" name="feedinput" value="1" />
+
+				<h3>Feed Sources</h3>
+				<ul>
+					<li>
+						<p>
+							<label>
+								<span class="label"><?php _e( 'Media Source Name', 'feedinput' ); ?></span>
+								<input class="text" type="text" name="media_source_name[]" />
+							</label>
+						</p>
+
+						<p>
+							<label>
+								<span class="label"><?php _e( 'Media Feed URL', 'feedinput' ); ?></span>
+								<input class="text" type="text" name="media_feed_url[]" />
+							</label>
+						</p>
+
+						<p>
+							<label>
+								<span class="label"><?php _e( 'Default Author', 'feedinput' ); ?></span>
+								<?php wp_dropdown_users( array() ); ?>
+							</label>
+						</p>
+
+						<p>
+							<label>
+								<span class="label"><?php _e( 'Expire Drafts', 'feedinput' ); ?></span>
+								<select name="expire_drafts[]">
+									<?php 
+									$expire_options = array(
+										'1 day'   => 1,
+										'7 days'  => 7,
+										'15 days' => 15,
+										'30 days' => 30,
+										'90 days' => 90,
+										'Never'   => 0
+									);
+									foreach ( $expire_options as $label => $val ) {
+										echo '<option value="', $val, '">', __( $label, 'feedinput') ,'</option>';
+									} ?>
+								</select>
+							</label>
+						</p>
+
+						<p>
+							<label>
+								<span class="label"><?php _e( 'Auto Publish', 'feedinput' ); ?></span>
+								<input type="checkbox" name="auto-publish[]" />
+							</label>
+						</p>
+
+						<p>
+							<label>
+								<span class="label"><?php _e( 'Add Credit', 'feedinput' ); ?></span>
+								<input type="checkbox" name="add-credit[]" />
+							</label>
+						</p>
+					</li>
+				</ul>
+
+
 				<label for="feed_urls"><?php _e('Feed URLs', 'feedinput'); ?></label>
 				<p><?php _e('Enter each feed URL on a separate line. You can prefix a URL with the <a href="' . admin_url('edit-tags.php?taxonomy=media-sources') .  '">media source</a> term name to assign the converted posts. Example: Arnold Times | http://arnoldtimesonline.com/feed', 'feedinput'); ?></p>
 				<textarea id="feed_urls" name="feed_urls" style="width: 100%" rows="10"><?php
