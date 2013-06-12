@@ -10,10 +10,26 @@ class FeedInput_FeedSet {
 
 	/**
 	 * @param string $feed_name - The name of this feed set
-	 * @param array $feed_urls - Array of URLs
+	 * @param array $feed_urls - Array of URLs with optional meta data
 	 * @param array $options - Various options for this feed set
 	 *
-	 * Options:
+	 * $feed_urls:
+   *  It can be an array of strings that are the URL.
+   *    array( 'http://example.com/feed/', 'http://wordpress.org/feed' )
+   *
+   *  Or each can be an array with meta data.
+   *    array(
+   *      array(
+   *        'url' => 'http://example.com/feed',
+   *        'custom_term' => 'Example',
+   *      ),
+   *      array(
+   *        'url' => 'http://wordpress.org/feed',
+   *        'custom_term' => 'WordPress'
+   *      )
+   *    )
+	 *
+	 * $options:
 	 *
 	 * array(
 	 *   // Maps the item data to the post and meta fields
@@ -37,7 +53,20 @@ class FeedInput_FeedSet {
 	 */
 	function __construct( $feed_name, $feed_urls, $options ) {
 		$this->name = $feed_name;
-		$this->urls = (array) $feed_urls;
+
+		// Convert feed URLs into array with meta data
+		$urls = array();
+		foreach ( $feed_urls as $feed_url ) {
+			if ( is_array( $feed_url ) ) {
+				$urls[] = $feed_url;
+			} else {
+				$urls[] = array(
+					'url' => $feed_url,
+				);
+			}
+		}
+
+		$this->urls = $urls;
 
 		$default = array(
 			// Options for converting an item into a post
@@ -60,7 +89,12 @@ class FeedInput_FeedSet {
 	 */
 	function update() {
 
-		$feed = fetch_feed( $this->urls );
+		$urls = array();
+		foreach ( $this->urls as $url ) {
+			$urls[] = $url['url'];
+		}
+
+		$feed = fetch_feed( $urls );
 
 		$items = FeedInput_FeedItem::parse_feed_items( $feed->get_items(), $this );
 

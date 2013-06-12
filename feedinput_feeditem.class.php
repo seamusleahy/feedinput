@@ -578,7 +578,6 @@ class FeedInput_FeedItem {
 			add_post_meta( $post_id, $key, $value, true );
 		}
 
-		echo 'post meta added';
 
 		// Mark that we have created a post from the feed item
 		$converted_posts[$feedset->name] = $post_id;
