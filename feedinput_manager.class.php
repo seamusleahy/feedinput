@@ -17,6 +17,12 @@ class FeedInput_Manager {
 			wp_schedule_event( time(), 'hourly', 'feedinput_update_feeds' );
 		}
 		add_action( 'feedinput_update_feeds', array( 'FeedInput_Manager', 'update_feeds') );
+
+		// Delete old items
+		if ( wp_next_scheduled( 'feedinput_delete_items' ) === false ) {
+			wp_schedule_event( time(), 'daily', 'feedinput_delete_items' );
+		}
+		add_action( 'feedinput_delete_items', array( 'FeedInput_Manager', 'delete_items') );
 	}
 
 
@@ -40,6 +46,15 @@ class FeedInput_Manager {
 		}
 	}
 
+
+	/**
+	 * Delete the old items
+	 */
+	static function delete_items() {
+		foreach( self::$feed_sets as $feed_name => $feed_set ) {
+			$feed_set->delete_expired_items();
+		}
+	}
 
 	/**
 	 * Force an update of a feed

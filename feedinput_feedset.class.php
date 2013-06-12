@@ -49,6 +49,13 @@ class FeedInput_FeedSet {
 	 *
 	 *   // The post type to save the converted items to
 	 *   'convert_post_type' => 'post',
+	 *
+	 *   // Duration of days before deleting the hidden post types (feedinput_item) for downloaded feed items.
+	 *   // Warning: The feedinput_item is the only way to know if an item has been pulled.
+	 *   // If the item is deleted but the item is still in the feed the next time it is checked, the item
+	 *   // will be pulled down again.
+	 *   // Set to false to not delete
+	 *   'days_before_delete_items' => 356
 	 * )
 	 */
 	function __construct( $feed_name, $feed_urls, $options ) {
@@ -72,9 +79,10 @@ class FeedInput_FeedSet {
 			// Options for converting an item into a post
 			'convert' => array(),
 			'convert_to_post' => true,
-			'convert_post_type' => 'post'
-
+			'convert_post_type' => 'post',
+			'days_before_delete_items' => 356,
 		);
+
 		$this->options = array_merge( $default, $options );
 
 		$this->options['convert'] = array_merge( array(
@@ -107,6 +115,45 @@ class FeedInput_FeedSet {
 				$item->convert_to_post( $this->options['convert'], $this );
 			}
 		}
+	}
+
+
+	/**
+	 * Delete expired items
+	 */
+	function delete_expired_items() {
+		if ( !$this->options['days_before_delete_items'] ) {
+			return;
+		}
+
+		add_filter( 'posts_where', array( &$this, 'delete_expired_items_posts_where') );
+
+		$query = new WP_Query( array(
+			'post_type' => 'feedinput_item',
+			'posts_per_page' => 100,
+			'post_status' => array( 'publish', 'draft' ),
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'feedinput_feed',
+					'field' => 'slug',
+					'terms' => $this->name,
+				)
+			)
+		) );
+
+		remove_filter( 'posts_where', array( &$this, 'delete_expired_items_posts_where') );
+
+		foreach ( $query->posts as $post ) {
+			wp_delete_post( $post->ID, true );
+		}
+	}
+
+	/**
+	 * Add to the where clause when deleting expired items
+	 */
+	function delete_expired_items_posts_where( $where ) {
+		$where .= " AND post_date < '" . date('Y-m-d', time() - $this->options['days_before_delete_items'] * 60 * 60 * 24 ) . "'";
+		return $where;
 	}
 
 

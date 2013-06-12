@@ -53,6 +53,13 @@ $options:
 
    // The post type to save the converted items to
    'convert_post_type' => 'post',
+
+   // Duration of days before deleting the hidden post types (feedinput_item) for downloaded feed items.
+   // Warning: The feedinput_item is the only way to know if an item has been pulled.
+   // If the item is deleted but the item is still in the feed the next time it is checked, the item
+   // will be pulled down again.
+   // Set to false to not delete
+   'days_before_delete_items' => 356
  )
 ```
 
