@@ -14,11 +14,10 @@ if ( !defined(__DIR__) ) {
 }
 
 require_once __DIR__ .'/feedinput_fieldfilters.class.php';
+require_once __DIR__ . '/feedinput_convertcallbacks.class.php';
 require_once __DIR__ .'/feedinput_feeditem.class.php';
 require_once __DIR__ .'/feedinput_feedset.class.php';
 require_once __DIR__ .'/feedinput_manager.class.php';
 require_once __DIR__ .'/api.php';
 
 require_once __DIR__ . '/feedinput_adminpage.class.php';
-
-//require_once __DIR__ .'/test.php';

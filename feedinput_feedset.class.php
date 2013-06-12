@@ -88,7 +88,22 @@ class FeedInput_FeedSet {
 		$this->options['convert'] = array_merge( array(
 			'post' => array(),
 			'meta' => array(),
+			'callbacks' => array(),
 		), $this->options['convert'] );
+	}
+
+
+	/**
+	 * Get the feed settings by URl of the feed
+	 */
+	function get_feed_settings( $feed_url ) {
+		foreach ( $this->urls as $feed ) {
+			if ( $feed['url'] == $feed_url ) {
+				return $feed;
+			}
+		}
+
+		return array();
 	}
 
 

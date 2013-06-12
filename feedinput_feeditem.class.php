@@ -546,7 +546,7 @@ class FeedInput_FeedItem {
 		);
 
 		$post_map = array_merge( $default_post, $options['post'] );
-		$post = $this->populate_values( $post_map );
+		$post = $this->populate_values( $post_map, $feedset );
 		$post = apply_filters( 'feedinput_convert_post_data', $post, $this->data );
 
 		$post_id = wp_insert_post( $post );
@@ -571,8 +571,8 @@ class FeedInput_FeedItem {
 
 
 		$postmeta_map = array_merge( $default_meta, $options['meta'] );
-		$postmeta = $this->populate_values( $postmeta_map );
-		$postmeta = apply_filters( 'feedinput_convert_post_meta_data', $postmeta, $this->data );
+		$postmeta = $this->populate_values( $postmeta_map, $feedset );
+		$postmeta = apply_filters( 'feedinput_convert_post_meta_data', $postmeta, $this->data, $feedset );
 
 		foreach ( $postmeta as $key => $value ) {
 			add_post_meta( $post_id, $key, $value, true );
@@ -583,6 +583,15 @@ class FeedInput_FeedItem {
 		$converted_posts[$feedset->name] = $post_id;
 		update_post_meta( $this->post->ID, 'converted_posts', $converted_posts );
 
+		$default_callbacks = array(
+			'source_taxonomy' => array( 'FeedInput_ConvertCallbacks', 'source_taxonomy' ),
+		);
+		$callbacks = array_merge( $default_callbacks, $options['callbacks'] );
+		foreach ( $callbacks as $callback ) {
+			if ( is_callable( $callback ) ) {
+				call_user_func_array( $callback, array( get_post( $post_id ), $this->data, $feedset ) );
+			}
+		}
 
 		// Allow others to do additional work
 		do_action( 'feedinput_convert_to_post', get_post( $post_id ), $this->data, $feedset );
@@ -595,7 +604,7 @@ class FeedInput_FeedItem {
 	/**
 	 * Executes the $map into key and values
 	 */
-	protected function populate_values( $map ) {
+	protected function populate_values( $map, $feedset ) {
 		$data = array();
 
 		foreach ( $map as $field_name => $where ) {
@@ -617,7 +626,8 @@ class FeedInput_FeedItem {
 					break;
 
 				case 'callback':
-					$data[$field_name] = call_user_func_array( $where['value'], array( $this->data ) );
+					$args = isset( $where['args'] ) ? $where['args'] : null;
+					$data[$field_name] = call_user_func_array( $where['value'], array( $this->data, $feedset, $args ) );
 					break;
 			}
 		}
