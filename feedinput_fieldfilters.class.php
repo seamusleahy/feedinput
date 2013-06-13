@@ -112,6 +112,27 @@ class FeedInput_FieldFilters {
 		return null;
 	}
 
+	/**
+	 * Allow each feed to define the literal value
+	 *
+	 * Pass an associative array to $args of:
+	 *   array(
+	 *     'default_value' => 'value',
+	 *     'field_name' => 'name'
+	 *   )
+	 */
+	static function literal_per_feed( $data, $feedset, $args ) {
+		$feedset_options = $feedset->options;
+    $feed_options = $feedset->get_feed_settings( $data['feed_url'] );
+    $options = array_merge( $feedset_options, $feed_options );
 
+    $default_value = isset( $args['default_value'] ) ? $args['default_value'] : null;
+    $field_name = !empty( $args['field_name'] ) ? $args['field_name'] : false;
 
+    if ( $field_name == false || !isset( $options[$field_name] ) ) {
+    	return $default_value;
+    }
+
+    return $options[$field_name];
+	}
 }

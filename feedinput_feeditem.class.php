@@ -538,7 +538,7 @@ class FeedInput_FeedItem {
 			'post_modified_gmt' => array( 'type' => 'field' , 'value' => 'date'),
 			'post_name' =>         array( 'type' => 'callback', 'value' => array( 'FeedInput_FieldFilters', 'post_name') ),
 			'post_author' =>       array( 'type' => 'callback', 'value' => array( 'FeedInput_FieldFilters', 'post_author') ),
-			'post_status' =>       array( 'type' => 'literal', 'value' => 'draft' ),
+			'post_status' =>       array( 'type' => 'callback', 'value' => array( 'FeedInput_FieldFilters', 'literal_per_feed' ), 'args' => array( 'default_value' => 'draft', 'field_name' => 'post_status' ) ),
 			'tax_input' =>         array( 'type' => 'callback', 'value' => array( 'FeedInput_FieldFilters', 'tax_input') ),
 			'menu_order' =>        array( 'type' => 'literal', 'value' => 0 ),
 			'comment_status' =>    array( 'type' => 'literal', 'value' => 'closed' ),

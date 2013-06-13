@@ -253,7 +253,9 @@ class FeedInput_AdminPage {
 							'post_author' => array(
 								'find_wordpress_user' => false,
 								'default_author_id' => (int) $default_authors[$key],
-							)
+							),
+
+							'post_status' => !empty( $auto_publishes[$key] ) && filter_var( $auto_publishes[$key], FILTER_VALIDATE_BOOLEAN ) ? 'publish' : 'draft',
 						);
 					}
 				}
