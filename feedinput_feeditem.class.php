@@ -532,7 +532,7 @@ class FeedInput_FeedItem {
 
 		$default_post = array(
 			'post_title' =>        array( 'type' => 'field', 'value' => 'title' ),
-			'post_content' =>      array( 'type' => 'field', 'value' => 'content' ),
+			'post_content' =>      array( 'type' => 'callback', 'value' => array( 'FeedInput_FieldFilters', 'post_content') ),
 			'post_type' =>         array( 'type' => 'literal' , 'value' => $feedset->options['convert_post_type']),
 			'post_date_gmt' =>     array( 'type' => 'field' , 'value' => 'date'),
 			'post_modified_gmt' => array( 'type' => 'field' , 'value' => 'date'),

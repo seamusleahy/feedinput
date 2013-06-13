@@ -256,6 +256,10 @@ class FeedInput_AdminPage {
 							),
 
 							'post_status' => !empty( $auto_publishes[$key] ) && filter_var( $auto_publishes[$key], FILTER_VALIDATE_BOOLEAN ) ? 'publish' : 'draft',
+						
+							'post_content' => array(
+								'postfix' => !empty( $add_credits[$key] ) && filter_var( $add_credits[$key], FILTER_VALIDATE_BOOLEAN ) ? '<p>Via '.$names[$key].'</p>' : '',
+							)
 						);
 					}
 				}

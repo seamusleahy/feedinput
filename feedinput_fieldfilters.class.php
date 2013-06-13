@@ -27,8 +27,8 @@ class FeedInput_FieldFilters {
 			)
 		);
 		$feedset_options = $feedset->options;
-    $feed_options = $feedset->get_feed_settings( $data['feed_url'] );
-    $options = array_merge( $default_options, $feedset_options, $feed_options );
+		$feed_options = $feedset->get_feed_settings( $data['feed_url'] );
+		$options = array_merge( $default_options, $feedset_options, $feed_options );
 
 		$find_wordpress_user = isset( $options['post_author']['find_wordpress_user'] ) ? $options['post_author']['find_wordpress_user'] : true;
 
@@ -123,16 +123,38 @@ class FeedInput_FieldFilters {
 	 */
 	static function literal_per_feed( $data, $feedset, $args ) {
 		$feedset_options = $feedset->options;
-    $feed_options = $feedset->get_feed_settings( $data['feed_url'] );
-    $options = array_merge( $feedset_options, $feed_options );
+		$feed_options = $feedset->get_feed_settings( $data['feed_url'] );
+		$options = array_merge( $feedset_options, $feed_options );
 
-    $default_value = isset( $args['default_value'] ) ? $args['default_value'] : null;
-    $field_name = !empty( $args['field_name'] ) ? $args['field_name'] : false;
+		$default_value = isset( $args['default_value'] ) ? $args['default_value'] : null;
+		$field_name = !empty( $args['field_name'] ) ? $args['field_name'] : false;
 
-    if ( $field_name == false || !isset( $options[$field_name] ) ) {
-    	return $default_value;
-    }
+		if ( $field_name == false || !isset( $options[$field_name] ) ) {
+			return $default_value;
+		}
 
-    return $options[$field_name];
+		return $options[$field_name];
+	}
+
+
+	/**
+	 *
+	 */
+	static function post_content( $data, $feedset, $args ) {
+		$feedset_options = $feedset->options;
+		$feed_options = $feedset->get_feed_settings( $data['feed_url'] );
+		$options = array_merge( $feedset_options, $feed_options );
+
+		$content = $data['content'];
+
+		if ( isset( $options['post_content'] ) && is_array( $options['post_content'] ) ) {
+
+			$prefix = isset( $options['post_content']['prefix'] ) ? $options['post_content']['prefix'] : '';
+			$postfix = isset( $options['post_content']['postfix'] ) ? $options['post_content']['postfix'] : '';
+
+			$content = $prefix . $content . $postfix;
+		}
+
+		return $content;
 	}
 }
