@@ -79,6 +79,14 @@ class FeedInput_Manager {
 		}
 		return null;
 	}
+
+
+	/**
+	 * Get all the feedsets
+	 */
+	static function get_all_feedsets() {
+		return self::$feed_sets;
+	}
 }
 
 

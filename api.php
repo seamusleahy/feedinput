@@ -38,3 +38,12 @@ function feedinput_force_update_feed( $feed_name ) {
 function feedinput_get_feed( $feed_name ) {
   return FeedInput_Manager::get_feedset( $feed_name );
 }
+
+/**
+ * Retrieve all the feed sets
+ *
+ * @return array of FeedInput_FeedSet
+ */
+function feedinput_get_all_feeds( ) {
+  return FeedInput_Manager::get_all_feedsets();
+}

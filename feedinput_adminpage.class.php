@@ -34,12 +34,12 @@ class FeedInput_AdminPage {
 		$feeds = $this->get_feed_urls();
 
 		$expire_options = apply_filters( 'feedinput_admin_expire_drafts_options', array(
+			'Never'   => 0,
 			'1 day'   => 1,
 			'7 days'  => 7,
 			'15 days' => 15,
 			'30 days' => 30,
 			'90 days' => 90,
-			'Never'   => 0
 		));
 		?>
 		<pre>
@@ -259,41 +259,15 @@ class FeedInput_AdminPage {
 						
 							'post_content' => array(
 								'postfix' => !empty( $add_credits[$key] ) && filter_var( $add_credits[$key], FILTER_VALIDATE_BOOLEAN ) ? '<p>Via '.$names[$key].'</p>' : '',
-							)
+							),
+
+							'expire_converted_posts' => array(
+								'days_before_expire' => (int) $expire_drafts[$key],
+							),
 						);
 					}
 				}
 			}
-
-
-			// echo '<pre>';
-			// var_dump( $feeds );
-			// echo '</pre>';
-
-			// // Get input
-			// $feed_urls_raw = filter_input( INPUT_POST, 'feed_urls', FILTER_SANITIZE_STRING );
-			// $lines = explode( "\n", $feed_urls_raw );
-			// $urls  = array();
-			// $taxonomy_map = array();
-
-			// foreach ( $lines as $line ) {
-			// 	preg_match( '#[\s|]+([^\s|]+)\s*$#', $line, $matches );
-			// 	if ( isset( $matches[1] ) ) {
-			// 		$urls = $matches[1];
-			// 		$taxonomy_map[$matches[1]] = str_replace( $matches[0], '', $line );
-			// 	} else {
-			// 		$urls = trim($line);
-			// 	}
-			// }
-
-			// $feed_urls = array();
-			// foreach ( $urls as $url ) {
-			// 	$url = filter_var( $url, FILTER_SANITIZE_URL );
-
-			// 	if ( $url != false ) {
-			// 		$feed_urls = $url;
-			// 	}
-			// }
 
 			// Save the feeds
 			$this->set_feed_urls( $feeds );

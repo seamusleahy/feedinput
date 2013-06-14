@@ -143,24 +143,28 @@ class FeedInput_FeedSet {
 
 		add_filter( 'posts_where', array( &$this, 'delete_expired_items_posts_where') );
 
-		$query = new WP_Query( array(
-			'post_type' => 'feedinput_item',
-			'posts_per_page' => 100,
-			'post_status' => array( 'publish', 'draft' ),
-			'tax_query' => array(
-				array(
-					'taxonomy' => 'feedinput_feed',
-					'field' => 'slug',
-					'terms' => $this->name,
+		do {
+			$query = new WP_Query( array(
+				'post_type' => 'feedinput_item',
+				'posts_per_page' => 30,
+				'post_status' => array( 'publish', 'draft' ),
+				'tax_query' => array(
+					array(
+						'taxonomy' => 'feedinput_feed',
+						'field' => 'slug',
+						'terms' => $this->name,
+					)
 				)
-			)
-		) );
+			) );
+
+			foreach ( $query->posts as $post ) {
+				wp_delete_post( $post->ID, true );
+			}
+		} while( $query->max_num_pages > 1 );
 
 		remove_filter( 'posts_where', array( &$this, 'delete_expired_items_posts_where') );
 
-		foreach ( $query->posts as $post ) {
-			wp_delete_post( $post->ID, true );
-		}
+		
 	}
 
 	/**

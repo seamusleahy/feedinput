@@ -561,6 +561,7 @@ class FeedInput_FeedItem {
 			'feedinput_item' => array( 'type' => 'literal', 'value' => $this->post->ID ),
 			'feed_name' =>      array( 'type' => 'literal', 'value' => $feedset->name ),
 			'_thumbnail_id' => array( 'type' => 'callback', 'value' => array( 'FeedInput_FieldFilters', 'featured_image' ) ),
+			'feedinput_converted_date' => array( 'type' => 'literal', 'value' => date( 'Y-m-d H:i:s' ) ),
 		);
 
 
