@@ -112,12 +112,18 @@ class FeedInput_FeedSet {
 	 */
 	function update() {
 
-		$urls = array();
-		foreach ( $this->urls as $url ) {
+		// Prevent duplicate imports via array_unique, a horrible hack
+		foreach ( array_unique($this->urls) as $url ) {
+
+			if ( is_array($url)) $url = $url['url'];
+
 			$feed = fetch_feed( $url );
 
 			//Don't parse busted feeds
-			if ( get_class($feed) == 'WP_Error') continue;
+			if ( get_class($feed) == 'WP_Error') {
+				error_log('Could not load feed ' . $url);
+				continue;
+			}
 
 			$items = FeedInput_FeedItem::parse_feed_items( $feed->get_items(), $this );
 

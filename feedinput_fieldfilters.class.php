@@ -4,7 +4,7 @@
  * a post.
  */
 class FeedInput_FieldFilters {
-	
+
 	/**
 	 * Generate the post_name from the item's title
 	 */
@@ -81,14 +81,13 @@ class FeedInput_FieldFilters {
 	static function featured_image( $data ) {
 		if ( preg_match( '#<img\s[^>]*\s?src=("(?P<url1>[^"]+)"|\'(?P<url2>[^\']+)\')#', $data['content'], $matches ) ) {
 			$url = !empty( $matches['url1'] ) ? $matches['url1'] : $matches['url2'];
-			
+
 			// Download file to temp location
 			$tmp = download_url( $url );
 
 			// Set variables for storage
 			// fix file filename for query strings
-			preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $url, $matches );
-			$file_array['name'] = basename($matches[0]);
+			$file_array['name'] = ( preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $url, $matches ) ) ? basename($matches[0]) : basename( $url );
 			$file_array['tmp_name'] = $tmp;
 
 			// If error storing temporarily, unlink
@@ -108,7 +107,7 @@ class FeedInput_FieldFilters {
 			}
 			return $id;
 		}
-		
+
 		return null;
 	}
 
