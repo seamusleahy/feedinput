@@ -94,12 +94,10 @@ class FeedInput_FeedItem {
 				// Existing item
 				$data = self::get_data_from_post( $uid_to_post[$uid] );
 				$feedinput_items[] = new FeedInput_FeedItem( $data, $uid_to_post[$uid] );
-				error_log( "Found existing: " . $uid);
 			} else {
 				// New item
 				$data = self::parse_item( $item, $feedset );
 				$feedinput_items[] = new FeedInput_FeedItem( $data );
-				error_log( "Found new: " . $uid);
 			}
 		}
 
