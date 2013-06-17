@@ -57,8 +57,8 @@ class FeedInput_FeedItem {
 	 */
 	static function parse_feed_items( $items, $feedset ) {
 
-		// Get the UIDs
-		$uids = array();
+		// Build a list the UIDs of items
+		$uids = array('NULL');	//insert a dummy value to the query doesn't barf
 		foreach ( $items as $item ) {
 			$uids[] = $item->feed->feed_url . '::' . $item->get_id();
 		}
@@ -80,7 +80,7 @@ class FeedInput_FeedItem {
 		// Make it easy to get post by UID
 		$uid_to_post = array();
 		foreach ( $posts as $post ) {
-			$uid_to_post[$post->post_title] = $post;
+			$uid_to_post[ get_post_meta($post->ID, 'uid', true) ] = $post;
 		}
 
 		// Create the array of items
