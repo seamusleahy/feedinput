@@ -80,12 +80,9 @@ class FeedInput_FieldFilters {
 	 * Find an image in the content to make into the featured image
 	 */
 	static function featured_image( $data ) {
-		if ( !function_exists('download_url') ) {
-			require_once( ABSPATH . '/wp-admin/includes/file.php' );
-		}
-
-		if ( !function_exists('media_handle_sideload') ) {
-			require_once( ABSPATH . '/wp-admin/includes/media.php' );
+		//get download_url, media_handle_sideload, etc
+		if ( !defined('WP_ADMIN') && WP_ADMIN ) {
+			require_once( ABSPATH . '/wp-admin/includes/admin.php' );
 		}
 
 		try {
