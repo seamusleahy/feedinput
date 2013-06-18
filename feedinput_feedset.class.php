@@ -55,7 +55,7 @@ class FeedInput_FeedSet {
 	 *   // If the item is deleted but the item is still in the feed the next time it is checked, the item
 	 *   // will be pulled down again.
 	 *   // Set to false to not delete
-	 *   'days_before_delete_items' => 356
+	 *   'days_before_delete_items' => 365
 	 * )
 	 */
 	function __construct( $feed_name, $feed_urls, $options ) {
@@ -80,7 +80,7 @@ class FeedInput_FeedSet {
 			'convert' => array(),
 			'convert_to_post' => true,
 			'convert_post_type' => 'post',
-			'days_before_delete_items' => 356,
+			'days_before_delete_items' => 365,
 		);
 
 		$this->options = array_merge( $default, $options );
@@ -112,22 +112,29 @@ class FeedInput_FeedSet {
 	 */
 	function update() {
 
-		$urls = array();
-		foreach ( $this->urls as $url ) {
-			$urls[] = $url['url'];
-		}
+		// Prevent duplicate imports via array_unique, a horrible hack
+		foreach ( array_unique($this->urls) as $url ) {
 
-		$feed = fetch_feed( $urls );
+			if ( is_array($url)) $url = $url['url'];
 
-		$items = FeedInput_FeedItem::parse_feed_items( $feed->get_items(), $this );
+			$feed = fetch_feed( $url );
 
-		foreach ( $items as $item ) {
-			$item->save( $this );
-		}
-		
-		if ( $this->options['convert_to_post']) {
+			//Don't parse busted feeds
+			if ( get_class($feed) == 'WP_Error') {
+				error_log('Could not load feed ' . $url);
+				continue;
+			}
+
+			$items = FeedInput_FeedItem::parse_feed_items( $feed->get_items(), $this );
+
 			foreach ( $items as $item ) {
-				$item->convert_to_post( $this->options['convert'], $this );
+				$item->save( $this );
+			}
+
+			if ( $this->options['convert_to_post']) {
+				foreach ( $items as $item ) {
+					$item->convert_to_post( $this->options['convert'], $this );
+				}
 			}
 		}
 	}
@@ -164,7 +171,7 @@ class FeedInput_FeedSet {
 
 		remove_filter( 'posts_where', array( &$this, 'delete_expired_items_posts_where') );
 
-		
+
 	}
 
 	/**
@@ -185,7 +192,7 @@ class FeedInput_FeedSet {
 	function get_items( $number_of_items=10, $page=1 ) {
 		return FeedInput_FeedItem::get_items( $this, $number_of_items, $page );
 	}
-	
+
 
 	/**
 	 * Convert an item in the feed into a post
