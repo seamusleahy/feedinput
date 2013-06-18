@@ -30,7 +30,7 @@ class FeedInput_Manager {
 	/**
 	 * Change the feed cache duration to one hour
 	 */
-	static feed_cache_lifetime( $seconds ) {
+	static function feed_cache_lifetime( $seconds ) {
 		return 3600; // 1 hour duration
 	}
 
