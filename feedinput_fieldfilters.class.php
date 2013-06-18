@@ -84,33 +84,41 @@ class FeedInput_FieldFilters {
 			require_once( ABSPATH . '/wp-admin/includes/file.php' );
 		}
 
-		if ( preg_match( '#<img\s[^>]*\s?src=("(?P<url1>[^"]+)"|\'(?P<url2>[^\']+)\')#', $data['content'], $matches ) ) {
-			$url = !empty( $matches['url1'] ) ? $matches['url1'] : $matches['url2'];
+		if ( !function_exists('media_handle_sideload') ) {
+			require_once( ABSPATH . '/wp-admin/includes/media.php' );
+		}
 
-			// Download file to temp location
-			$tmp = download_url( $url );
+		try {
+			if ( preg_match( '#<img\s[^>]*\s?src=("(?P<url1>[^"]+)"|\'(?P<url2>[^\']+)\')#', $data['content'], $matches ) ) {
+				$url = !empty( $matches['url1'] ) ? $matches['url1'] : $matches['url2'];
 
-			// Set variables for storage
-			// fix file filename for query strings
-			$file_array['name'] = ( preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $url, $matches ) ) ? basename($matches[0]) : basename( $url );
-			$file_array['tmp_name'] = $tmp;
+				// Download file to temp location
+				$tmp = download_url( $url );
 
-			// If error storing temporarily, unlink
-			if ( is_wp_error( $tmp ) ) {
-				@unlink($file_array['tmp_name']);
-				$file_array['tmp_name'] = '';
-				return null;
+				// Set variables for storage
+				// fix file filename for query strings
+				$file_array['name'] = ( preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $url, $matches ) ) ? basename($matches[0]) : basename( $url );
+				$file_array['tmp_name'] = $tmp;
+
+				// If error storing temporarily, unlink
+				if ( is_wp_error( $tmp ) ) {
+					@unlink($file_array['tmp_name']);
+					$file_array['tmp_name'] = '';
+					return null;
+				}
+
+				// do the validation and storage stuff
+				$id = media_handle_sideload( $file_array, 0 );
+
+				// Image is bad
+				if ( is_wp_error( $id ) ) {
+					@unlink($file_array['tmp_name']);
+					return null;
+				}
+				return $id;
 			}
-
-			// do the validation and storage stuff
-			$id = media_handle_sideload( $file_array, 0 );
-
-			// Image is bad
-			if ( is_wp_error( $id ) ) {
-				@unlink($file_array['tmp_name']);
-				return null;
-			}
-			return $id;
+		} catch ( Exception $e ) {
+			error_log( $e->getTraceAsString() );
 		}
 
 		return null;
