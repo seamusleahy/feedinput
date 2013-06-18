@@ -58,24 +58,28 @@ class FeedInput_FeedItem {
 	static function parse_feed_items( $items, $feedset ) {
 
 		// Build a list the UIDs of items
-		$uids = array('NULL');	//insert a dummy value to the query doesn't barf
+		$uids = array();
 		foreach ( $items as $item ) {
 			$uids[] = $item->feed->feed_url . '::' . $item->get_id();
 		}
 
 		// Retrieve the items already pulled
-		$posts = get_posts( array(
-			'post_type' => 'feedinput_item',
-			'posts_per_page' => count( $uids ),
-			'post_status' => array('any', 'trash'),
-			'meta_query' => array(
-				array(
-					'key' => 'uid',
-					'value' => $uids,
-					'compare' => 'IN'
+		if ( !empty( $uids ) ) {
+			$posts = get_posts( array(
+				'post_type' => 'feedinput_item',
+				'posts_per_page' => count( $uids ),
+				'post_status' => array('any', 'trash'),
+				'meta_query' => array(
+					array(
+						'key' => 'uid',
+						'value' => $uids,
+						'compare' => 'IN'
+					)
 				)
-			)
-		));
+			));
+		} else {
+			$posts = array();
+		}
 
 		// Make it easy to get post by UID
 		$uid_to_post = array();
