@@ -89,8 +89,8 @@ class FeedInput_FieldFilters {
 			if ( preg_match( '#<img\s[^>]*\s?src=("(?P<url1>[^"]+)"|\'(?P<url2>[^\']+)\')#', $data['content'], $matches ) ) {
 				$url = !empty( $matches['url1'] ) ? $matches['url1'] : $matches['url2'];
 
-				// Download file to temp location
-				$tmp = download_url( $url );
+				// Download file to temp location but make it fast
+				$tmp = download_url( $url, 10 );
 
 				// Set variables for storage
 				// fix file filename for query strings
