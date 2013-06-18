@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Collection of callbacks to use with converting feed item data into
  * a post.
@@ -79,6 +80,10 @@ class FeedInput_FieldFilters {
 	 * Find an image in the content to make into the featured image
 	 */
 	static function featured_image( $data ) {
+		if ( !function_exists('download_url') ) {
+			require_once( ABSPATH . '/wp-admin/includes/file.php' );
+		}
+
 		if ( preg_match( '#<img\s[^>]*\s?src=("(?P<url1>[^"]+)"|\'(?P<url2>[^\']+)\')#', $data['content'], $matches ) ) {
 			$url = !empty( $matches['url1'] ) ? $matches['url1'] : $matches['url2'];
 
