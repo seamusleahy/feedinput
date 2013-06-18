@@ -23,6 +23,15 @@ class FeedInput_Manager {
 			wp_schedule_event( time(), 'daily', 'feedinput_delete_items' );
 		}
 		add_action( 'feedinput_delete_items', array( 'FeedInput_Manager', 'delete_items') );
+		add_filter( 'wp_feed_cache_transient_lifetime', array( 'FeedInput_Manager', 'feed_cache_lifetime' ) );
+	}
+
+
+	/**
+	 * Change the feed cache duration to one hour
+	 */
+	static feed_cache_lifetime( $seconds ) {
+		return 3600; // 1 hour duration
 	}
 
 
