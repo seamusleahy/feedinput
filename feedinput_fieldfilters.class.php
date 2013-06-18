@@ -90,7 +90,7 @@ class FeedInput_FieldFilters {
 				$url = !empty( $matches['url1'] ) ? $matches['url1'] : $matches['url2'];
 
 				// Download file to temp location
-				$tmp = download_url( $url );
+				$tmp = download_url( $url, 10 );
 
 				// Set variables for storage
 				// fix file filename for query strings
