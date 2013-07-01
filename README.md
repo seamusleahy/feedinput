@@ -10,7 +10,7 @@ A WordPress plugin for pulling items from RSS and ATOM feeds into WordPress as p
 <?php feedinput_register_feed( $feed_name, $feed_urls, $options ); ?>
 ```
 
-  
+
 @param string $feed_name - The name of this feed set
 @param array $feed_urls - Array of URLs with optional meta data
 @param array $options - Various options for this feed set
@@ -75,5 +75,8 @@ $options:
 <?php feedinput_get_feed( $feed_name ); ?>
 ```
 
+## Debugging ##
+Define FEEDINPUT_DEBUG as true in your wp-config.php or elsewhere to activate some basic debugging messages, output to the PHP error_log.
+
 ## TODO ##
-[ ] Update expiration date for draft posts for existing converted posts when the user changes the expiration date 
+[ ] Update expiration date for draft posts for existing converted posts when the user changes the expiration date

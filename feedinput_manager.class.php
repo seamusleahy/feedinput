@@ -4,7 +4,7 @@
  * Takes care of the high level tasks of managing the various feeds
  */
 class FeedInput_Manager {
-	
+
 	static $feed_sets=array();
 
 
@@ -50,6 +50,7 @@ class FeedInput_Manager {
 	 * Update the value of the feeds
 	 */
 	static function update_feeds() {
+		FeedInput_Manager::log('Updating all feeds');
 		foreach( self::$feed_sets as $feed_name => $feed_set ) {
 			$feed_set->update();
 		}
@@ -60,6 +61,7 @@ class FeedInput_Manager {
 	 * Delete the old items
 	 */
 	static function delete_items() {
+		FeedInput_Manager::log('Deleting expired items');
 		foreach( self::$feed_sets as $feed_name => $feed_set ) {
 			$feed_set->delete_expired_items();
 		}
@@ -95,6 +97,16 @@ class FeedInput_Manager {
 	 */
 	static function get_all_feedsets() {
 		return self::$feed_sets;
+	}
+
+
+	/**
+	 * Logging helpers
+	 */
+	static function log( $message ) {
+		if ( is_defined('FEEDINPUT_DEBUG') && FEEDINPUT_DEBUG ) {
+			error_log('FEEDINPUT: ' . $message);
+		}
 	}
 }
 

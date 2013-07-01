@@ -468,6 +468,7 @@ class FeedInput_FeedItem {
 			) );
 
 			if ( $id != 0 ) {
+				FeedInput_Manager::log('Saved feedinput_item id ' . $id . ' with title: ' . $this->data['title']);
 				$this->post = get_post( $id );
 			}
 
@@ -557,8 +558,11 @@ class FeedInput_FeedItem {
 
 		// Abort if unable to save
 		if ( empty( $post_id ) ) {
+			FeedInput_Manager::log('Failed to convert feedinput_item id ' . $this->post-ID . ' into post');
 			return;
 		}
+		FeedInput_Manager::log('Converted feedinput_item id ' . $this->post-ID . ' into post with id ' . $post_id);
+
 
 		// Save the post meta
 		$default_meta = array(
