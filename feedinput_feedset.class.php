@@ -121,11 +121,12 @@ class FeedInput_FeedSet {
 
 			//Don't parse busted feeds
 			if ( get_class($feed) == 'WP_Error') {
-				error_log('Could not load feed ' . $url);
+				FeedInput_Manager::log('Could not load feed ' . $url);
 				continue;
 			}
 
 			$items = FeedInput_FeedItem::parse_feed_items( $feed->get_items(), $this );
+			FeedInput_Manager::log('Found ' . count($items) . ' from feed ' . $url);
 
 			foreach ( $items as $item ) {
 				$item->save( $this );
@@ -165,6 +166,7 @@ class FeedInput_FeedSet {
 			) );
 
 			foreach ( $query->posts as $post ) {
+				FeedInput_Manager::log('Deleting expired item ' . $post-ID);
 				wp_delete_post( $post->ID, true );
 			}
 		} while( $query->max_num_pages > 1 );
